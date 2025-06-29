@@ -1,0 +1,155 @@
+# === Social Media Graph App (Clean Final Version) ===
+
+class Graph:
+    def __init__(self):
+        self.adjacency_list = {}
+        self.incoming_edges = {}
+
+    def addVertex(self, vertex_id):
+        if vertex_id not in self.adjacency_list:
+            self.adjacency_list[vertex_id] = set()
+            self.incoming_edges[vertex_id] = set()
+
+    def addEdge(self, from_vertex, to_vertex):
+        self.addVertex(from_vertex)
+        self.addVertex(to_vertex)
+        self.adjacency_list[from_vertex].add(to_vertex)
+        self.incoming_edges[to_vertex].add(from_vertex)
+
+    def removeEdge(self, from_vertex, to_vertex):
+        if from_vertex in self.adjacency_list:
+            self.adjacency_list[from_vertex].discard(to_vertex)
+        if to_vertex in self.incoming_edges:
+            self.incoming_edges[to_vertex].discard(from_vertex)
+
+    def listOutgoingAdjacentVertex(self, vertex_id):
+        if vertex_id in self.adjacency_list:
+            return list(self.adjacency_list[vertex_id])
+        return []
+
+    def listIncomingAdjacentVertex(self, vertex_id):
+        if vertex_id in self.incoming_edges:
+            return list(self.incoming_edges[vertex_id])
+        return []
+
+    def getVertices(self):
+        return list(self.adjacency_list.keys())
+
+    def vertexExists(self, vertex_id):
+        return vertex_id in self.adjacency_list
+
+
+class Person:
+    def __init__(self, user_id, name, gender, bio, privacy):
+        self.user_id = user_id
+        self.name = name
+        self.gender = gender
+        self.bio = bio
+        self.privacy = privacy  # public or private
+
+    def display_profile(self):
+        return (f"Name: {self.name}\nGender: {self.gender}\n"
+                f"Bio: {self.bio}\nPrivacy: {self.privacy}")
+
+
+# === Users and Graph Setup ===
+users = {
+    1: Person(1, "Ali", "Male", "Footballer", "public"),
+    2: Person(2, "Aisyah", "Female", "Bookworm", "private"),
+    3: Person(3, "John", "Male", "Photographer", "public"),
+    4: Person(4, "Mei", "Female", "Nature lover", "public"),
+    5: Person(5, "Zara", "Female", "Baker", "private")
+}
+
+graph = Graph()
+for uid in users:
+    graph.addVertex(uid)
+
+# Initial follows
+graph.addEdge(1, 2)
+graph.addEdge(2, 3)
+graph.addEdge(3, 1)
+graph.addEdge(4, 5)
+
+
+# === Menu ===
+def menu():
+    while True:
+        print("\n=== Social Media Menu ===")
+        print("1. View all user names")
+        print("2. View a user's profile")
+        print("3. View followed accounts")
+        print("4. View followers")
+        print("5. Follow a user")
+        print("6. Unfollow a user")
+        print("7. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            print("\n--- All Users ---")
+            for uid, user in users.items():
+                print(f"{uid}: {user.name}")
+
+        elif choice == "2":
+            uid = int(input("Enter user ID: "))
+            if uid in users:
+                print("\n--- Profile ---")
+                print(users[uid].display_profile())
+            else:
+                print("User not found.")
+
+        elif choice == "3":
+            uid = int(input("Enter user ID: "))
+            if uid in users:
+                print(f"\n{users[uid].name} follows:")
+                following = graph.listOutgoingAdjacentVertex(uid)
+                if following:
+                    for fid in following:
+                        print(f"- {users[fid].name}")
+                else:
+                    print("Not following anyone.")
+            else:
+                print("User not found.")
+
+        elif choice == "4":
+            uid = int(input("Enter user ID: "))
+            if uid in users:
+                print(f"\nFollowers of {users[uid].name}:")
+                followers = graph.listIncomingAdjacentVertex(uid)
+                if followers:
+                    for fid in followers:
+                        print(f"- {users[fid].name}")
+                else:
+                    print("No followers.")
+            else:
+                print("User not found.")
+
+        elif choice == "5":
+            x = int(input("Enter your user ID: "))
+            y = int(input("Enter user ID to follow: "))
+            if x in users and y in users:
+                graph.addEdge(x, y)
+                print(f"{users[x].name} now follows {users[y].name}")
+            else:
+                print("Invalid user IDs.")
+
+        elif choice == "6":
+            x = int(input("Enter your user ID: "))
+            y = int(input("Enter user ID to unfollow: "))
+            if x in users and y in users:
+                graph.removeEdge(x, y)
+                print(f"{users[x].name} unfollowed {users[y].name}")
+            else:
+                print("Invalid user IDs.")
+
+        elif choice == "7":
+            print("Exiting program.")
+            break
+
+        else:
+            print("Invalid choice. Try again.")
+
+
+if __name__ == "__main__":
+    menu()
