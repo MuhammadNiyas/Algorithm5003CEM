@@ -1,5 +1,3 @@
-# === Social Media Graph App (Clean Final Version) ===
-
 class Graph:
     def __init__(self):
         self.adjacency_list = {}
@@ -32,33 +30,26 @@ class Graph:
             return list(self.incoming_edges[vertex_id])
         return []
 
-    def getVertices(self):
-        return list(self.adjacency_list.keys())
-
-    def vertexExists(self, vertex_id):
-        return vertex_id in self.adjacency_list
-
-
 class Person:
     def __init__(self, user_id, name, gender, bio, privacy):
         self.user_id = user_id
         self.name = name
         self.gender = gender
         self.bio = bio
-        self.privacy = privacy  # public or private
+        self.privacy = privacy
 
     def display_profile(self):
         return (f"Name: {self.name}\nGender: {self.gender}\n"
                 f"Bio: {self.bio}\nPrivacy: {self.privacy}")
 
 
-# === Users and Graph Setup ===
+#Users and Graph Setup
 users = {
-    1: Person(1, "Ali", "Male", "Footballer", "public"),
-    2: Person(2, "Aisyah", "Female", "Bookworm", "private"),
-    3: Person(3, "John", "Male", "Photographer", "public"),
-    4: Person(4, "Mei", "Female", "Nature lover", "public"),
-    5: Person(5, "Zara", "Female", "Baker", "private")
+    1: Person(1, "Zayn", "Male", "Footballer", "Public"),
+    2: Person(2, "Ain", "Female", "Hiker", "Private"),
+    3: Person(3, "Malik", "Male", "Gamer", "Public"),
+    4: Person(4, "Hani", "Female", "Musician", "Private"),
+    5: Person(5, "Jay", "Male", "Biker", "Private")
 }
 
 graph = Graph()
@@ -72,12 +63,12 @@ graph.addEdge(3, 1)
 graph.addEdge(4, 5)
 
 
-# === Menu ===
+# Menu
 def menu():
     while True:
         print("\n=== Social Media Menu ===")
         print("1. View all user names")
-        print("2. View a user's profile")
+        print("2. View a user profile")
         print("3. View followed accounts")
         print("4. View followers")
         print("5. Follow a user")
