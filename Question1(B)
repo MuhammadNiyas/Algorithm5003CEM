@@ -1,1 +1,72 @@
+import random
 
+# Define the IC hashing function with (folding technique)
+def ic_hash(ic_number: str, table_size: int) -> int:
+    
+    # Validate input which is exactly 12 digits and no dash aswell
+    if len(ic_number) != 12 or not ic_number.isdigit():
+        raise ValueError("IC number must be 12 digits (no dashes)")
+    
+    # Split the 12 digit of ic number to 3 group of 4 digits and sum all them 
+    part1 = int(ic_number[0:4])  # First 4 digits(Year+Month)
+    part2 = int(ic_number[4:8])  # Mid 4 digits  (Day+StateCode)
+    part3 = int(ic_number[8:12]) # Last 4 digits (Serial+Gender)
+    
+    # Return the folded sum modulo table size
+    return (part1 + part2 + part3) % table_size
+
+
+# Generate random 12-digit IC number
+def generate_random_ic():
+    year = random.randint(0, 99)
+    month = random.randint(1, 12)
+    day = random.randint(1, 28)
+    birth = f"{year:02d}{month:02d}{day:02d}"
+    state_code = f"{random.randint(1, 16):02d}"
+    serial = f"{random.randint(0, 9999):04d}"
+    return birth + state_code + serial
+
+# Insert ICs and count collisions using separate chaining
+def insert_ics_and_count_collisions(ic_list, table_size):
+    hash_table = [[] for _ in range(table_size)]
+    collisions = 0
+    for ic in ic_list:
+        index = ic_hash(ic, table_size)
+        if hash_table[index]:  # Collision if bucket is not empty
+            collisions += 1
+        hash_table[index].append(ic)
+    return collisions
+
+# Run simulation for 10 rounds per table size
+def run_simulation(rounds=10, num_ics=1000):
+    table_sizes = [1009, 2003]
+    results = {}
+
+    for size in table_sizes:
+        print(f"\nHASH TABLE SIZE: {size}")
+        round_collisions = []
+
+        for round_num in range(1, rounds + 1):
+            ic_list = [generate_random_ic() for _ in range(num_ics)]
+            collisions = insert_ics_and_count_collisions(ic_list, size)
+            round_collisions.append(collisions)
+            print(f"Round {round_num}: {collisions} collisions")
+
+        avg_collisions = sum(round_collisions) / rounds
+        load_factor = num_ics / size
+
+        print(f"\nTotal Collisions for Table Size {size}: {sum(round_collisions)}")
+        print(f"Average Collisions for Table Size {size}: {avg_collisions:.2f}")
+        print(f"Load Factor (δ) = n/m = {num_ics}/{size} = {load_factor:.3f}")
+        
+        results[size] = {
+            "collisions_per_round": round_collisions,
+            "average": avg_collisions,
+            "load_factor": load_factor
+        }
+
+    return results
+
+# Main execution 
+if __name__ == "__main__":
+    run_simulation()
