@@ -1,1 +1,83 @@
+import threading
+import random
+import time
 
+# Function to generate 100 random numbers between 0 and 10000
+def generate_random_numbers():
+    return [random.randint(0, 10000) for _ in range(100)]
+
+# Worker function for threading
+def worker():
+    generate_random_numbers()
+
+# MULTITHREADING
+def run_multithreaded_test(rounds=10):
+    print("\nMULTITHREADING")
+    thread_times = []
+
+    for i in range(rounds):
+        threads = []
+
+        start_time = time.time_ns()
+
+        for _ in range(3):
+            t = threading.Thread(target=worker)
+            threads.append(t)
+            t.start()
+
+        for t in threads:
+            t.join()
+
+        end_time = time.time_ns()
+        elapsed = end_time - start_time
+        thread_times.append(elapsed)
+        print(f"Round {i+1}: {elapsed} ns")
+
+    total_time = sum(thread_times)
+    avg_time = total_time / rounds
+
+    print(f"Total Time (Multithreading): {total_time} ns")
+    print(f"Average Time (Multithreading): {avg_time:.2f} ns")
+    return thread_times, total_time, avg_time
+
+# NON-MULTITHREADING
+def run_non_threaded_test(rounds=10):
+    print("\nNON-MULTITHREADING")
+    sequential_times = []
+
+    for i in range(rounds):
+        start_time = time.time_ns()
+
+        for _ in range(3):
+            worker()
+
+        end_time = time.time_ns()
+        elapsed = end_time - start_time
+        sequential_times.append(elapsed)
+        print(f"Round {i+1}: {elapsed} ns")
+
+    total_time = sum(sequential_times)
+    avg_time = total_time / rounds
+
+    print(f"Total Time (Non-Multithreading): {total_time} ns")
+    print(f"Average Time (Non-Multithreading): {avg_time:.2f} ns")
+    return sequential_times, total_time, avg_time
+
+# Main Execution
+if __name__ == "__main__":
+    mt_times, mt_total, mt_avg = run_multithreaded_test()
+    nt_times, nt_total, nt_avg = run_non_threaded_test()
+
+    # Save results to file
+    with open("q3_results.txt", "w") as f:
+        f.write("=== Multithreading Results ===\n")
+        for i, t in enumerate(mt_times):
+            f.write(f"Round {i+1}: {t} ns\n")
+        f.write(f"Total: {mt_total} ns\n")
+        f.write(f"Average: {mt_avg:.2f} ns\n\n")
+
+        f.write("=== Non-Threaded Results ===\n")
+        for i, t in enumerate(nt_times):
+            f.write(f"Round {i+1}: {t} ns\n")
+        f.write(f"Total: {nt_total} ns\n")
+        f.write(f"Average: {nt_avg:.2f} ns\n")
