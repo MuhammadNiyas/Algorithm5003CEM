@@ -1,1 +1,48 @@
+class Graph:
+    def __init__(self):
+        # Store outgoing edges such vertex -> set of vertices it follows
+        self.adjacency_list = {}
+        # Store incoming edges such vertex -> set of followers
+        self.incoming_edges = {}
 
+    # Adds a new vertex if there is non and initialize empty sets for ongoing and incoming 
+    def addVertex(self, vertex_id):
+        if vertex_id not in self.adjacency_list:
+            self.adjacency_list[vertex_id] = set()
+            self.incoming_edges[vertex_id] = set()
+
+    def addEdge(self, from_vertex, to_vertex):
+        # Ensure both users exist
+        self.addVertex(from_vertex)
+        self.addVertex(to_vertex)
+
+        # Add the following relationship
+        self.adjacency_list[from_vertex].add(to_vertex)
+        self.incoming_edges[to_vertex].add(from_vertex)
+
+    # Will returns the list of vertices tht given veretx point to outgoing 
+    def listOutgoingAdjacentVertex(self, vertex_id):
+        if vertex_id in self.adjacency_list:
+            return list(self.adjacency_list[vertex_id])
+        return []
+    
+    # Will returns the list of vertices tht given veretx point to incoming
+    def listIncomingAdjacentVertex(self, vertex_id):
+        if vertex_id in self.incoming_edges:
+            return list(self.incoming_edges[vertex_id])
+        return []
+ 
+    # Remove the directed edges between 2 vertices 
+    def removeEdge(self, from_vertex, to_vertex):
+        if from_vertex in self.adjacency_list:
+            self.adjacency_list[from_vertex].discard(to_vertex)
+        if to_vertex in self.incoming_edges:
+            self.incoming_edges[to_vertex].discard(from_vertex)
+
+    # Return the list 
+    def getVertices(self):
+        return list(self.adjacency_list.keys())
+    
+    # Check if vertex exist in graph then return true/false
+    def vertexExists(self, vertex_id):
+        return vertex_id in self.adjacency_list
