@@ -1,7 +1,0 @@
-users = {
-    1: Person(1, "Ali", "Male", "Footballer and traveler.", "public"),
-    2: Person(2, "Aisyah", "Female", "Bookworm.", "private"),
-    3: Person(3, "John", "Male", "Photographer.", "public"),
-    4: Person(4, "Mei", "Female", "Nature lover.", "public"),
-    5: Person(5, "Zara", "Female", "Baker and coder.", "private")
-}
